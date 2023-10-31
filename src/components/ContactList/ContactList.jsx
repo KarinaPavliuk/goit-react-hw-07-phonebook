@@ -1,44 +1,37 @@
-import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-// import { deleteContact } from 'store/contacts/slice';
-import { getAllContacts } from 'store/contacts/thunks';
-import { getContacts, getFilter } from 'store/selectors';
+import { deleteContact } from 'store/contacts/operations';
+import { selectContacts, selectContactsFilter } from 'store/selectors';
 
 export const ContactList = () => {
-  const { items, isLoading, error } = useSelector(getContacts);
-  console.log('items', items);
-  console.log(isLoading);
-  console.log(error);
-  const filter = useSelector(getFilter);
+  const contacts = useSelector(selectContacts);
+  const filterValue = useSelector(selectContactsFilter).toLowerCase();
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    !items.length && dispatch(getAllContacts());
-  }, [dispatch, items.length]);
+  const handleDelete = evt => {
+    dispatch(deleteContact(evt.currentTarget.id));
+  };
 
-  // const onDeleteClick = id => {
-  //   dispatch(deleteContact(id));
-  // };
+  const getVisibilityContacts = () => {
+    if (!filterValue || filterValue === '') {
+      return contacts;
+    }
 
-  // const getFilteredContacts = () => {
-  //   return items.filter(({ name }) =>
-  //     name.toLowerCase().includes(filter.toLowerCase())
-  //   );
-  // };
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(filterValue)
+    );
+  };
 
-  // const filteredContacts = getFilteredContacts();
+  const visibilityContacts = getVisibilityContacts();
 
   return (
     <ul>
-      {items?.map(contact => (
+      {visibilityContacts?.map(contact => (
         <li key={contact.id}>
           {contact.name} {contact.number}
-          {/* {onDeleteClick && (
-            <button type="button" onClick={() => onDeleteClick(contact.id)}>
-              Delete
-            </button>
-          )} */}
+          <button type="button" id={contact.id} onClick={handleDelete}>
+            Delete
+          </button>
         </li>
       ))}
     </ul>

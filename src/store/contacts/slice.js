@@ -1,12 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getAllContacts } from './thunks';
-import {
-  handleFulfilledAll,
-  handlePending,
-  handleFulfilled,
-  handleRejected,
-} from './helpers';
+import { fetchContacts, addContact, deleteContact } from './operations';
 
+export const handlePending = state => {
+  state.contacts.isLoading = true;
+};
+
+export const handleRejected = (state, { payload }) => {
+  state.contacts.isLoading = false;
+  state.contacts.error = payload.message;
+};
 const initialState = {
   contacts: {
     items: [],
@@ -20,24 +22,27 @@ const contactsSlice = createSlice({
   initialState,
   extraReducers: builder => {
     builder
-      .addCase(getAllContacts.fulfilled, handleFulfilledAll)
+      .addCase(fetchContacts.fulfilled, (state, { payload }) => {
+        state.contacts.isLoading = false;
+        state.contacts.error = null;
+        state.contacts.items = payload;
+      })
+      .addCase(addContact.fulfilled, (state, { payload }) => {
+        state.contacts.isLoading = false;
+        state.contacts.error = null;
+        state.contacts.items.push(payload);
+      })
+      .addCase(deleteContact.fulfilled, (state, { payload }) => {
+        state.contacts.isLoading = false;
+        state.contacts.error = null;
+        const index = state.contacts.items.findIndex(
+          contact => contact.id === payload.id
+        );
+        state.contacts.items.splice(index, 1);
+      })
       .addMatcher(action => action.type.endsWith('/pending'), handlePending)
-      .addMatcher(action => action.type.endsWith('/fulfilled'), handleFulfilled)
       .addMatcher(action => action.type.endsWith('/rejected'), handleRejected);
   },
-  // {
-  //   [getAllContacts.pending]: state => {
-  //     state.isLoading = true;
-  //   },
-  //   [getAllContacts.fulfilled]: (state, { payload }) => {
-  //     state.isLoading = false;
-  //     state.contacts = payload;
-  //   },
-  //   [getAllContacts.rejected]: (state, { payload }) => {
-  //     state.isLoading = false;
-  //     state.error = payload.message;
-  //   },
-  // },
 });
 
 export const contactReducer = contactsSlice.reducer;
