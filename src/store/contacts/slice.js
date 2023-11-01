@@ -24,16 +24,11 @@ const contactsSlice = createSlice({
   extraReducers: builder => {
     builder
       .addCase(fetchContacts.fulfilled, (state, { payload }) => {
-        //=======================================
-        console.log('fetch>>>>>>', initialState);
-        console.log('fetchFul', payload);
         state.contacts.isLoading = false;
         state.contacts.error = null;
-        console.log('state', state.contacts);
         state.contacts.items = payload;
       })
       .addCase(addContact.fulfilled, (state, { payload }) => {
-        console.log('add>>>>>>', initialState.contacts.contacts);
         state.contacts.isLoading = false;
         state.contacts.error = null;
         state.contacts.items.push(payload);
