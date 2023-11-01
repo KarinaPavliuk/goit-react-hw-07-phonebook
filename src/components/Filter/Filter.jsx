@@ -1,20 +1,18 @@
-// import { useDispatch, useSelector } from 'react-redux';
-// import { handleFilterChanges } from 'store/filter/slice';
-// import { getFilter } from 'store/selectors';
+import { useDispatch } from 'react-redux';
+import { handleFilterChanges } from 'store/filter/slice';
 
-// export const Filter = () => {
-//   const filter = useSelector(getFilter);
+export const Filter = () => {
+  const dispatch = useDispatch();
 
-//   const dispatch = useDispatch();
+  const handleChange = ({ target }) => {
+    const value = target.value.toLowerCase();
+    dispatch(handleFilterChanges(value));
+  };
 
-//   const handleChange = ({ target }) => {
-//     dispatch(handleFilterChanges(target.value));
-//   };
-
-//   return (
-//     <>
-//       <p>Find contacts by name</p>
-//       <input type="text" name="filter" value={filter} onChange={handleChange} />
-//     </>
-//   );
-// };
+  return (
+    <>
+      <p>Find contacts by name</p>
+      <input type="text" name="filter" onChange={handleChange} />
+    </>
+  );
+};

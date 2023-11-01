@@ -1,12 +1,17 @@
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteContact } from 'store/contacts/operations';
-import { selectContacts, selectContactsFilter } from 'store/selectors';
+import { fetchContacts, deleteContact } from 'store/contacts/operations';
+import { selectContacts, selectFilter } from 'store/selectors';
 
 export const ContactList = () => {
   const contacts = useSelector(selectContacts);
-  const filterValue = useSelector(selectContactsFilter).toLowerCase();
+  const filterValue = useSelector(selectFilter);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   const handleDelete = evt => {
     dispatch(deleteContact(evt.currentTarget.id));
@@ -17,7 +22,7 @@ export const ContactList = () => {
       return contacts;
     }
 
-    return contacts.filter(contact =>
+    return contacts?.filter(contact =>
       contact.name.toLowerCase().includes(filterValue)
     );
   };
@@ -28,7 +33,7 @@ export const ContactList = () => {
     <ul>
       {visibilityContacts?.map(contact => (
         <li key={contact.id}>
-          {contact.name} {contact.number}
+          {contact.name} {contact.phone}
           <button type="button" id={contact.id} onClick={handleDelete}>
             Delete
           </button>
