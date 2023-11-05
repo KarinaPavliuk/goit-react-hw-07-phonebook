@@ -1,12 +1,9 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchContacts, deleteContact } from 'store/contacts/operations';
-import { selectContacts, selectFilter } from 'store/selectors';
+import { selectVisibleContacts } from 'store/selectors';
 
 export const ContactList = () => {
-  const contacts = useSelector(selectContacts);
-  const filterValue = useSelector(selectFilter);
-
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -17,17 +14,7 @@ export const ContactList = () => {
     dispatch(deleteContact(evt.currentTarget.id));
   };
 
-  const getVisibilityContacts = () => {
-    if (!filterValue || filterValue === '') {
-      return contacts;
-    }
-
-    return contacts?.filter(contact =>
-      contact.name.toLowerCase().includes(filterValue)
-    );
-  };
-
-  const visibilityContacts = getVisibilityContacts();
+  const visibilityContacts = useSelector(selectVisibleContacts);
 
   return (
     <ul>
